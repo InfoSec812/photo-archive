@@ -1,0 +1,890 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Photo Archive
+  description: An API to manage photo uploads, previews, downloads, exif data, tagging, and organization
+  contact:
+    name: Zanclus Consulting, LLC
+    email: dphillips@zanclus.com
+    url: http://zanclus.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: https://photos.apps.zanclus.com/api/v1
+paths:
+  /user:
+    put:
+      description: |
+        When provided with a valid username and password, returns an authentication token which expires after a configured amount of time
+      operationId: userLogin
+      requestBody:
+        description: The username/password credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+      responses:
+        '202':
+          description: |
+            The user was successfully authenticated and a base64 encoded UUID 
+            is returned as an authentication token
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'ZjJjMmExOTUtOTU4OC00MzRmLWFiYzctMzk0NmZlODdhNWI2Cg=='
+        '401':
+          description: The user was not authenticated
+    post:
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      description: |
+        Create a new user account
+      operationId: newUser
+      requestBody:
+        description: The username/password credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+      responses:
+        '202':
+          description: |
+            The user was successfully created
+        '401':
+          description: The user was not created or the authenticated user is not authorized to create users
+  /user/{id}:
+    get:
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      description: Get user details for a given username
+      operationId: getUserDetailsByName
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          example: 'john.smith'
+      responses:
+        '200':
+          description: The user ID was found and the requesting user/API has permissions to view it
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: The authenticated user does not have permissions to view the requested object, or the object was not found
+  /group:
+    post:
+      description: Create a new group
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      operationId: newGroup
+      requestBody:
+        description: The new group details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewGroup'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/NewGroup'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NewGroup'
+      responses:
+        '202':
+          description: |
+            The group was successfully created
+        '403':
+          description: The group was not created because the authenticated user is not authorized to create groups
+        '409':
+          description: The group was not created because the group already exists
+  /group/{id}:
+    get:
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      description: View the specified group details
+      operationId: getGroupById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: 'admin'
+      responses:
+        '200':
+          description: The requested group exists and the authenticated user has permissions to view the group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '404':
+          description: The authenticated user does not have permissions to view the requested object, or the object was not found
+    put:
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      parameters:
+        - in: path
+          required: true
+          name: id
+          schema:
+            type: string
+            example: 'admin'
+      description: Update the specified group
+      operationId: updateGroupById
+      responses:
+        '202':
+          description: The requested group exists and the authenticated user has permissions to modify the group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '404':
+          description: The authenticated user does not have permissions to view the requested object, or the object was not found
+  /group/{id}/add/{userId}:
+    post:
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      description: Get user details for a given username
+      operationId: addUserToGroup
+      parameters:
+        - in: path
+          required: true
+          name: id
+          schema:
+            type: string
+            example: 'admin'
+        - in: path
+          required: true
+          name: userId
+          schema:
+            type: string
+            example: 'john.smith'
+      responses:
+        '202':
+          description: The requested group exists and the authenticated user has permissions to modify the group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '404':
+          description: The authenticated user does not have permissions to modify the requested object, or the object was not found
+  /group/{id}/delete/{userId}:
+    delete:
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      description: Get user details for a given username
+      operationId: deleteUserFromGroup
+      parameters:
+        - in: path
+          required: true
+          name: id
+          schema:
+            type: string
+            example: 'admin'
+        - in: path
+          required: true
+          name: userId
+          schema:
+            type: string
+            example: 'john.smith'
+      responses:
+        '202':
+          description: The requested group exists and the authenticated user has permissions to modify the group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '404':
+          description: The authenticated user does not have permissions to modify the requested object, or the object was not found
+  /photo:
+    post:
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      description: Upload a new photo and get back the unique identifier
+      operationId: addPhoto
+      requestBody:
+        content:
+          image/*:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '202':
+          description: Accepted the upload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageObject'
+        '403':
+          description: The authenticated user is not authorized to upload a photo
+  /photo/{id}:
+    get:
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      description: Retrieve the referenced image by id
+      operationId: getImageById
+      responses:
+        '200':
+          description: The image exists and the autheticated user is allowed access
+        '404':
+          description: The image does NOT exist OR the user is not allowed access
+    put:
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      description: Update metadata about the specified image
+      operationId: updateImageById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageObject'
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        '202':
+          description: The requested change is valid and the user has permissions to make the change
+        '400':
+          description: The user is correctly authenticated, but the request is not properly formatted
+        '404':
+          description: The user is either not authenticated or the requested image ID does not exist
+    delete:
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      description: Delete image
+      operationId: deleteImageById
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          description: The requested delete is valid and the user has permissions to delete the specified image
+        '404':
+          description: The user is either not authenticated or the requested image ID does not exist
+  /photo/{id}/tag:
+    get:
+      description: Get all tags for the specified photo
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      operationId: getTagsByPhotoId
+      parameters:
+        - in: path
+          required: true
+          name: id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User is authorized and the image ID exists, return the list of tags in JSON or XML format
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+            application/xml:
+              schema:
+                type: array
+                items:
+                  type: string
+        '404':
+          description: Image ID does not exist or user is not authorized
+  /photo/{id}/tag/{tag}:
+    post:
+      description: Add the specified tag to the specified image
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      operationId: addTagToPhoto
+      parameters:
+        - in: path
+          required: true
+          name: id
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: tag
+          schema:
+            type: string
+      responses:
+        '202':
+          description: User is authorized, image ID exists, and tag is formatted correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageObject'
+        '404':
+          description: The user is either unauthorized, or the image ID does not exist
+    delete:
+      description: Delete the specified tag from the specified image
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      operationId: deleteTagFromPhoto
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+        - in: path
+          required: true
+          name: tag
+          schema:
+            type: string
+      responses:
+        '202':
+          description: User is authorized, image ID exists, and tag is formatted correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageObject'
+        '404':
+          description: The user is either unauthorized, or the image ID does not exist
+components:
+  securitySchemes:
+      BasicAuth:
+        type: http
+        scheme: basic
+      BearerAuth:
+        type: http
+        scheme: bearer
+      ApiKeyAuth:
+        type: apiKey
+        in: header
+        name: X-API-Key
+      # OAuth2:
+      #   type: oauth2
+      #   flows:
+      #     authorizationCode:
+      #       authorizationUrl: https://example.com/oauth/authorize
+      #       tokenUrl: https://example.com/oauth/token
+      #       scopes:
+      #         read: Grants read access
+      #         write: Grants write access
+      #         admin: Grants access to admin operations
+  schemas:
+    User:
+      allOf:
+        - $ref: '#/components/schemas/NewUser'
+        - required:
+          - id
+          properties:
+            id:
+              type: integer
+              format: integer
+            created:
+              type: string
+              format: date-time
+            modified:
+              type: string
+              format: date-time
+            groups:
+              type: array
+              items:
+                $ref: '#/components/schemas/Group'
+    NewUser:
+      required:
+        - username
+        - email
+        - password
+        - givenName
+        - familyName
+      properties:
+        username:
+          type: string
+        email:
+          type: string    
+        password:
+          type: string
+        familyName:
+          type: string
+        givenName:
+          type: string
+    Group:
+      allOf:
+        - $ref: '#/components/schemas/NewGroup'
+        - required:
+          - id
+          properties:
+            id:
+              type: string
+            created:
+              type: string
+              format: date-time
+            modified:
+              type: string
+              format: date-time
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+    NewGroup:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    Credentials:
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    ImageObject:
+      properties:
+        about:
+          description: The subject matter of the content.
+          type: string
+        accessibilityapi:
+          description: Indicates that the resource is compatible with the referenced
+            accessibility API (WebSchemas wiki lists possible values).
+          type: string
+        accessibilitycontrol:
+          description: Identifies input methods that are sufficient to fully control
+            the described resource (WebSchemas wiki lists possible values).
+          type: string
+        accessibilityfeature:
+          description: Content features of the resource, such as accessible media, alternatives
+            and supported enhancements for accessibility (WebSchemas wiki lists possible
+            values).
+          type: string
+        accessibilityhazard:
+          description: A characteristic of the described resource that is physiologically
+            dangerous to some users. Related to WCAG 2.0 guideline 2.3 (WebSchemas wiki
+            lists possible values).
+          type: string
+        accountableperson:
+          description: Specifies the Person that is legally accountable for the CreativeWork.
+          type: string
+        additionaltype:
+          description: An additional type for the item, typically used for adding more
+            specific types from external vocabularies in microdata syntax. This is a
+            relationship between something and a class that the thing is in. In RDFa
+            syntax, it is better to use the native RDFa syntax - the \'typeof\' attribute
+            - for multiple types. Schema.org tools may have only weaker understanding
+            of extra types, in particular those defined externally.
+          type: string
+          format: uri
+        aggregaterating:
+          description: The overall rating, based on a collection of reviews or ratings,
+            of the item.
+          type: string
+        alternatename:
+          description: An alias for the item.
+          type: string
+        alternativeheadline:
+          description: A secondary title of the CreativeWork.
+          type: string
+        associatedarticle:
+          description: A NewsArticle associated with the Media Object.
+          type: string
+        associatedmedia:
+          description: A media object that encodes this CreativeWork. This property
+            is a synonym for encoding.
+          type: string
+        audience:
+          description: An intended audience, i.e. a group for whom something was created.
+            Supersedes serviceAudience.
+          type: string
+        audio:
+          description: An embedded audio object.
+          type: string
+        author:
+          description: The author of this content. Please note that author is special
+            in that HTML 5 provides a special mechanism for indicating authorship via
+            the rel tag. That is equivalent to this and may be used interchangeably.
+          type: string
+        award:
+          description: An award won by or for this item. Supersedes awards.
+          type: string
+        bitrate:
+          description: The bitrate of the media object.
+          type: integer
+        caption:
+          description: The caption for this object.
+          type: string
+        character:
+          description: Fictional person connected with a creative work.
+          type: string
+        citation:
+          description: A citation or reference to another creative work, such as another
+            publication, web page, scholarly article, etc.
+          type: string
+        comment:
+          description: Comments, typically from users.
+          type: string
+        commentcount:
+          description: The number of comments this CreativeWork (e.g. Article, Question
+            or Answer) has received. This is most applicable to works published in Web
+            sites with commenting system; additional comments may exist elsewhere.
+          type: integer
+        contentlocation:
+          description: The location depicted or described in the content. For example,
+            the location in a photograph or painting.
+          type: string
+        contentrating:
+          description: Official rating of a piece of content&#x2014;for example,\'MPAA
+            PG-13\'.
+          type: string
+        contentsize:
+          description: File size in (mega/kilo) bytes.
+          type: string
+        contenturl:
+          description: Actual bytes of the media object, for example the image file
+            or video file.
+          type: string
+          format: uri
+        contributor:
+          description: A secondary contributor to the CreativeWork.
+          type: string
+        copyrightholder:
+          description: The party holding the legal copyright to the CreativeWork.
+          type: string
+        copyrightyear:
+          description: The year during which the claimed copyright for the CreativeWork
+            was first asserted.
+          type: number
+        creator:
+          description: The creator/author of this CreativeWork. This is the same as
+            the Author property for CreativeWork.
+          type: string
+        datecreated:
+          description: The date on which the CreativeWork was created or the item was
+            added to a DataFeed.
+          type: string
+          format: date-time
+        datemodified:
+          description: The date on which the CreativeWork was most recently modified
+            or when the item\'s entry was modified within a DataFeed.
+          type: string
+          format: date-time
+        datepublished:
+          description: Date of first broadcast/publication.
+          type: string
+          format: date
+        description:
+          description: A short description of the item.
+          type: string
+        diagram:
+          description: 'An image containing a diagram that illustrates the structure
+            and/or its component substructures and/or connections with other structures. '
+          type: string
+        discussionurl:
+          description: A link to the page containing the comments of the CreativeWork.
+          type: string
+          format: uri
+        duration:
+          description: The duration of the item (movie, audio recording, event, etc.)
+            in ISO 8601 date format.
+          type: string
+        editor:
+          description: Specifies the Person who edited the CreativeWork.
+          type: string
+        educationalalignment:
+          description: An alignment to an established educational framework.
+          type: string
+        educationaluse:
+          description: The purpose of a work in the context of education; for example,
+            \'assignment\', \'group work\'.
+          type: string
+        embedurl:
+          description: A URL pointing to a player for a specific video. In general,
+            this is the information in the src element of an embed tag and should not
+            be the same as the content of the loc tag.
+          type: string
+          format: uri
+        encodescreativework:
+          description: The CreativeWork encoded by this media object.
+          type: string
+        encoding:
+          description: A media object that encodes this CreativeWork. This property
+            is a synonym for associatedMedia. Supersedes encodings.
+          type: string
+        encodingformat:
+          description: mp3, mpeg4, etc.
+          type: string
+        exampleofwork:
+          description: 'A creative work that this work is an example/instance/realization/derivation
+            of. Inverse property: workExample.'
+          type: string
+        exifdata:
+          description: exif data for this object.
+          type: string
+        expires:
+          description: Date the content expires and is no longer useful or available.
+            Useful for videos.
+          type: string
+          format: date-time
+        fileformat:
+          description: Media type (aka MIME format, see IANA site) of the content e.g.
+            application/zip of a SoftwareApplication binary. In cases where a CreativeWork
+            has several media type representations, \'encoding\' can be used to indicate
+            each MediaObject alongside particular fileFormat information.
+          type: string
+        genre:
+          description: Genre of the creative work or group.
+          type: string
+        haspart:
+          description: 'Indicates a CreativeWork that is (in some sense) a part of this
+            CreativeWork. Inverse property: isPartOf.'
+          type: string
+        headline:
+          description: Headline of the article.
+          type: string
+        height:
+          description: The height of the item.
+          type: integer
+        image:
+          description: An image of the item. This can be a URL or a fully described
+            ImageObject.
+          type: string
+        inlanguage:
+          description: The language of the content or performance or used in an action.
+            Please use one of the language codes from the IETF BCP 47 standard. Supersedes
+            language.
+          type: string
+        interactionstatistic:
+          description: The number of interactions for the CreativeWork using the WebSite
+            or SoftwareApplication. The most specific child type of InteractionCounter
+            should be used. Supersedes interactionCount.
+          type: integer
+        interactivitytype:
+          description: The predominant mode of learning supported by the learning resource.
+            Acceptable values are \'active\', \'expositive\', or \'mixed\'.
+          type: string
+        isbasedonurl:
+          description: A resource that was used in the creation of this resource. This
+            term can be repeated for multiple sources. For example, http://example.com/great-multiplication-intro.html.
+          type: string
+          format: uri
+        isfamilyfriendly:
+          description: Indicates whether this content is family friendly.
+          type: boolean
+        ispartof:
+          description: 'Indicates a CreativeWork that this CreativeWork is (in some
+            sense) part of. Inverse property: hasPart.'
+          type: string
+        keywords:
+          description: Keywords or tags used to describe this content. Multiple entries
+            in a keywords list are typically delimited by commas.
+          type: string
+        learningresourcetype:
+          description: The predominant type or kind characterizing the learning resource.
+            For example, \'presentation\', \'handout\'.
+          type: string
+        license:
+          description: A license document that applies to this content, typically indicated
+            by URL.
+          type: string
+        locationcreated:
+          description: The location where the CreativeWork was created, which may not
+            be the same as the location depicted in the CreativeWork.
+          type: string
+        logo:
+          description: 'An associated logo. '
+          type: string
+        mainentity:
+          description: 'Indicates the primary entity described in some page or other
+            CreativeWork. Inverse property: mainEntityOfPage.'
+          type: string
+        mainentityofpage:
+          description: 'Indicates a page (or other CreativeWork) for which this thing
+            is the main entity being described.            See background notes for
+            details.       Inverse property: mainEntity.'
+          type: string
+        mentions:
+          description: Indicates that the CreativeWork contains a reference to, but
+            is not necessarily about a concept.
+          type: string
+        name:
+          description: The name of the item.
+          type: string
+        offers:
+          description: An offer to provide this item&#x2014;for example, an offer to
+            sell a product, rent the DVD of a movie, perform a service, or give away
+            tickets to an event.
+          type: string
+        photo:
+          description: A photograph of this place.  Supersedes photos.
+          type: string
+        playertype:
+          description: Player type required&#x2014;for example, Flash or Silverlight.
+          type: string
+        position:
+          description: The position of an item in a series or sequence of items.
+          type: string
+        potentialaction:
+          description: Indicates a potential Action, which describes an idealized action
+            in which this thing would play an \'object\' role.
+          type: string
+        primaryimageofpage:
+          description: 'Indicates the main image on the page. '
+          type: string
+          format: uri
+        producer:
+          description: The person or organization who produced the work (e.g. music
+            album, movie, tv/radio series etc.).
+          type: string
+        productioncompany:
+          description: The production company or studio responsible for the item e.g.
+            series, video game, episode etc.
+          type: string
+        provider:
+          description: The service provider, service operator, or service performer;
+            the goods producer. Another party (a seller) may offer those services or
+            goods on behalf of the provider. A provider may also serve as the seller.
+            Supersedes carrier.
+          type: string
+        publication:
+          description: A publication event associated with the item.
+          type: string
+        publisher:
+          description: The publisher of the creative work.
+          type: string
+        publishingprinciples:
+          description: Link to page describing the editorial principles of the organization
+            primarily responsible for the creation of the CreativeWork.
+          type: string
+          format: uri
+        recordedat:
+          description: 'The Event where the CreativeWork was recorded. The CreativeWork
+            may capture all or part of the event. Inverse property: recordedIn.'
+          type: string
+        regionsallowed:
+          description: The regions where the media is allowed. If not specified, then
+            it\'s assumed to be allowed everywhere. Specify the countries in ISO 3166
+            format.
+          type: string
+        releasedevent:
+          description: The place and time the release was issued, expressed as a PublicationEvent.
+          type: string
+        representativeofpage:
+          description: Indicates whether this image is representative of the content
+            of the page.
+          type: boolean
+        requiressubscription:
+          description: Indicates if use of the media require a subscription  (either
+            paid or free). Allowed values are true or false (note that an earlier version
+            had \'yes\', \'no\').
+          type: boolean
+        review:
+          description: A review of the item. Supersedes reviews.
+          type: string
+        sameas:
+          description: URL of a reference Web page that unambiguously indicates the
+            item\'s identity. E.g. the URL of the item\'s Wikipedia page, Freebase page,
+            or official website.
+          type: string
+          format: uri
+        schemaversion:
+          description: 'Indicates (by URL or string) a particular version of a schema
+            used in some CreativeWork. For example, a document could declare a schemaVersion
+            using a URL such as http://schema.org/version/2.0/ if precise indication
+            of schema version was required by some application. '
+          type: string
+        screenshot:
+          description: 'A link to a screenshot image of the app. '
+          type: string
+        sourceorganization:
+          description: The Organization on whose behalf the creator was working.
+          type: string
+        text:
+          description: The textual content of this CreativeWork.
+          type: string
+        thumbnail:
+          description: Thumbnail image for an image or video.
+          type: string
+        thumbnailurl:
+          description: A thumbnail image relevant to the Thing.
+          type: string
+          format: uri
+        timerequired:
+          description: Approximate or typical time it takes to work with or through
+            this learning resource for the typical intended target audience, e.g. \'P30M\',
+            \'P1H25M\'.
+          type: string
+        translator:
+          description: Organization or person who adapts a creative work to different
+            languages, regional differences and technical requirements of a target market.
+          type: string
+        typicalagerange:
+          description: The typical expected age range, e.g. \'7-9\', \'11-\'.
+          type: string
+        uploaddate:
+          description: Date when this media object was uploaded to this site.
+          type: string
+          format: date
+        url:
+          description: URL of the item.
+          type: string
+          format: uri
+        version:
+          description: The version of the CreativeWork embodied by a specified resource.
+          type: number
+        video:
+          description: An embedded video object.
+          type: string
+          format: binary
+        width:
+          description: The width of the item.
+          type: integer
+        workexample:
+          description: 'Example/instance/realization/derivation of the concept of this
+            creative work. eg. The paperback edition, first edition, or eBook. Inverse
+            property: exampleOfWork.'
+          type: string
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
