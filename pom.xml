@@ -14,6 +14,8 @@
   <properties>
     <main.verticle>com.zanclus.photo.MainVerticle</main.verticle>
     <vertx.version>3.6.2</vertx.version>
+    <sonar.organization>infosec812-github</sonar.organization>
+    <sonar.projectKey>InfoSec812_photo-archive</sonar.projectKey>
   </properties>
 
   <dependencies>
