@@ -3,3 +3,10 @@
 target
 target/**
 **/*.iml
+**/node_modules
+**/node_modules/**
+**/package_lock.json
+src/main/frontend/dist
+src/main/frontend/build
+src/main/frontend/dist/**
+src/main/frontend/build/**
