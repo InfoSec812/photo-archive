@@ -13,12 +13,12 @@ public class MainVerticle extends AbstractVerticle {
 
   @Override
   public void start(Future future) {
-    OpenAPI3RouterFactory.createRouterFactoryFromFile(this.vertx, getClass().getResource("/openapi.json").getFile(), openAPI3RouterFactoryAsyncResult -> {
+    OpenAPI3RouterFactory.create(this.vertx, "/openapi.yml", openAPI3RouterFactoryAsyncResult -> {
       if (openAPI3RouterFactoryAsyncResult.succeeded()) {
         OpenAPI3RouterFactory routerFactory = openAPI3RouterFactoryAsyncResult.result();
 
         // Enable automatic response when ValidationException is thrown
-        routerFactory.enableValidationFailureHandler(true);
+        // routerFactory.setValidationFailureHandler(true);
 
         // Add routes handlers
         routerFactory.addHandlerByOperationId("userLogin", new com.zanclus.photo.handlers.UserLoginHandler());

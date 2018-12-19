@@ -3,6 +3,10 @@
 target
 target/**
 **/*.iml
+.idea
+.idea/**
+.vscode
+.vscode/**
 **/node_modules
 **/node_modules/**
 **/package-lock.json
@@ -10,3 +14,7 @@ src/main/frontend/dist
 src/main/frontend/build
 src/main/frontend/dist/**
 src/main/frontend/build/**
+.classpath
+.project
+.settings
+.settings/**

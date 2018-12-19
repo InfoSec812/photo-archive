@@ -1,5 +1,6 @@
 package com.zanclus.photo;
 
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
@@ -20,6 +21,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.apache.http.entity.ContentType;
+
 import java.util.Base64;
 
 public class ApiClient {
@@ -27,6 +31,11 @@ public class ApiClient {
     private int port;
     private String host;
 
+    private static final String PHOTO_PATH = "/photo";
+    private static final String USER_PATH = "/user";
+    private static final String GROUP_PATH = "/group";
+    private static final String TEXT_ENCODING = "UTF-8";
+    private static final String URI_REGEX = "\\{{1}([.;?*+]*([^\\{\\}.;?*+]+)[^\\}]*)\\}{1}";
     
     private String ApiKeyAuth_token;
     
@@ -58,7 +67,7 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/user";
+        String uri = USER_PATH;
 
         HttpRequest request = client.put(uri);
 
@@ -81,12 +90,12 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/user";
+        String uri = USER_PATH;
 
         HttpRequest request = client.put(uri);
 
         MultiMap requestCookies = MultiMap.caseInsensitiveMultiMap();
-        this.addHeaderParam("Content-Type", "application/json", request);
+        this.addHeaderParam(HttpHeaderNames.CONTENT_TYPE.toString(), ContentType.APPLICATION_JSON.getMimeType(), request);
         
 
         this.renderAndAttachCookieHeader(request, requestCookies);
@@ -105,12 +114,12 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/user";
+        String uri = USER_PATH;
 
         HttpRequest request = client.put(uri);
 
         MultiMap requestCookies = MultiMap.caseInsensitiveMultiMap();
-        this.addHeaderParam("Content-Type", "application/xml", request);
+        this.addHeaderParam(HttpHeaderNames.CONTENT_TYPE.toString(), ContentType.APPLICATION_XML.getMimeType(), request);
         
 
         this.renderAndAttachCookieHeader(request, requestCookies);
@@ -129,12 +138,12 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/user";
+        String uri = USER_PATH;
 
         HttpRequest request = client.put(uri);
 
         MultiMap requestCookies = MultiMap.caseInsensitiveMultiMap();
-        this.addHeaderParam("Content-Type", "application/xml", request);
+        this.addHeaderParam(HttpHeaderNames.CONTENT_TYPE.toString(), ContentType.APPLICATION_XML.getMimeType(), request);
         
 
         this.renderAndAttachCookieHeader(request, requestCookies);
@@ -153,12 +162,12 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/user";
+        String uri = USER_PATH;
 
         HttpRequest request = client.put(uri);
 
         MultiMap requestCookies = MultiMap.caseInsensitiveMultiMap();
-        this.addHeaderParam("Content-Type", "application/x-www-form-urlencoded", request);
+        this.addHeaderParam(HttpHeaderNames.CONTENT_TYPE.toString(), ContentType.APPLICATION_FORM_URLENCODED.getMimeType(), request);
         
 
         this.renderAndAttachCookieHeader(request, requestCookies);
@@ -176,7 +185,7 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/user";
+        String uri = USER_PATH;
 
         HttpRequest request = client.post(uri);
 
@@ -201,12 +210,12 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/user";
+        String uri = USER_PATH;
 
         HttpRequest request = client.post(uri);
 
         MultiMap requestCookies = MultiMap.caseInsensitiveMultiMap();
-        this.addHeaderParam("Content-Type", "application/json", request);
+        this.addHeaderParam(HttpHeaderNames.CONTENT_TYPE.toString(), ContentType.APPLICATION_JSON.getMimeType(), request);
         this.attachApiKeyAuthSecurity(request, requestCookies);
         this.attachBearerAuthSecurity(request, requestCookies);
         
@@ -227,12 +236,12 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/user";
+        String uri = USER_PATH;
 
         HttpRequest request = client.post(uri);
 
         MultiMap requestCookies = MultiMap.caseInsensitiveMultiMap();
-        this.addHeaderParam("Content-Type", "application/xml", request);
+        this.addHeaderParam(HttpHeaderNames.CONTENT_TYPE.toString(), ContentType.APPLICATION_XML.getMimeType(), request);
         this.attachApiKeyAuthSecurity(request, requestCookies);
         this.attachBearerAuthSecurity(request, requestCookies);
         
@@ -253,12 +262,12 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/user";
+        String uri = USER_PATH;
 
         HttpRequest request = client.post(uri);
 
         MultiMap requestCookies = MultiMap.caseInsensitiveMultiMap();
-        this.addHeaderParam("Content-Type", "application/xml", request);
+        this.addHeaderParam(HttpHeaderNames.CONTENT_TYPE.toString(), ContentType.APPLICATION_XML.getMimeType(), request);
         this.attachApiKeyAuthSecurity(request, requestCookies);
         this.attachBearerAuthSecurity(request, requestCookies);
         
@@ -279,12 +288,12 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/user";
+        String uri = USER_PATH;
 
         HttpRequest request = client.post(uri);
 
         MultiMap requestCookies = MultiMap.caseInsensitiveMultiMap();
-        this.addHeaderParam("Content-Type", "application/x-www-form-urlencoded", request);
+        this.addHeaderParam(HttpHeaderNames.CONTENT_TYPE.toString(), ContentType.APPLICATION_FORM_URLENCODED.getMimeType(), request);
         this.attachApiKeyAuthSecurity(request, requestCookies);
         this.attachBearerAuthSecurity(request, requestCookies);
         
@@ -308,7 +317,7 @@ public class ApiClient {
 
         // Generate the uri
         String uri = "/user/{id}";
-        uri = uri.replaceAll("\\{{1}([.;?*+]*([^\\{\\}.;?*+]+)[^\\}]*)\\}{1}", "{$2}"); //Remove * . ; ? from url template
+        uri = uri.replaceAll(URI_REGEX, "{$2}"); //Remove * . ; ? from url template
         uri = uri.replace("{id}", this.renderPathParam("id", id));
         
 
@@ -334,7 +343,7 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/group";
+        String uri = GROUP_PATH;
 
         HttpRequest request = client.post(uri);
 
@@ -359,12 +368,12 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/group";
+        String uri = GROUP_PATH;
 
         HttpRequest request = client.post(uri);
 
         MultiMap requestCookies = MultiMap.caseInsensitiveMultiMap();
-        this.addHeaderParam("Content-Type", "application/json", request);
+        this.addHeaderParam(HttpHeaderNames.CONTENT_TYPE.toString(), ContentType.APPLICATION_JSON.getMimeType(), request);
         this.attachApiKeyAuthSecurity(request, requestCookies);
         this.attachBearerAuthSecurity(request, requestCookies);
         
@@ -385,12 +394,12 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/group";
+        String uri = GROUP_PATH;
 
         HttpRequest request = client.post(uri);
 
         MultiMap requestCookies = MultiMap.caseInsensitiveMultiMap();
-        this.addHeaderParam("Content-Type", "application/xml", request);
+        this.addHeaderParam(HttpHeaderNames.CONTENT_TYPE.toString(), ContentType.APPLICATION_XML.getMimeType(), request);
         this.attachApiKeyAuthSecurity(request, requestCookies);
         this.attachBearerAuthSecurity(request, requestCookies);
         
@@ -411,12 +420,12 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/group";
+        String uri = GROUP_PATH;
 
         HttpRequest request = client.post(uri);
 
         MultiMap requestCookies = MultiMap.caseInsensitiveMultiMap();
-        this.addHeaderParam("Content-Type", "application/xml", request);
+        this.addHeaderParam(HttpHeaderNames.CONTENT_TYPE.toString(), ContentType.APPLICATION_XML.getMimeType(), request);
         this.attachApiKeyAuthSecurity(request, requestCookies);
         this.attachBearerAuthSecurity(request, requestCookies);
         
@@ -437,12 +446,12 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/group";
+        String uri = GROUP_PATH;
 
         HttpRequest request = client.post(uri);
 
         MultiMap requestCookies = MultiMap.caseInsensitiveMultiMap();
-        this.addHeaderParam("Content-Type", "application/x-www-form-urlencoded", request);
+        this.addHeaderParam(HttpHeaderNames.CONTENT_TYPE.toString(), ContentType.APPLICATION_FORM_URLENCODED.getMimeType(), request);
         this.attachApiKeyAuthSecurity(request, requestCookies);
         this.attachBearerAuthSecurity(request, requestCookies);
         
@@ -466,7 +475,7 @@ public class ApiClient {
 
         // Generate the uri
         String uri = "/group/{id}";
-        uri = uri.replaceAll("\\{{1}([.;?*+]*([^\\{\\}.;?*+]+)[^\\}]*)\\}{1}", "{$2}"); //Remove * . ; ? from url template
+        uri = uri.replaceAll(URI_REGEX, "{$2}"); //Remove * . ; ? from url template
         uri = uri.replace("{id}", this.renderPathParam("id", id));
         
 
@@ -496,7 +505,7 @@ public class ApiClient {
 
         // Generate the uri
         String uri = "/group/{id}";
-        uri = uri.replaceAll("\\{{1}([.;?*+]*([^\\{\\}.;?*+]+)[^\\}]*)\\}{1}", "{$2}"); //Remove * . ; ? from url template
+        uri = uri.replaceAll(URI_REGEX, "{$2}"); //Remove * . ; ? from url template
         uri = uri.replace("{id}", this.renderPathParam("id", id));
         
 
@@ -529,7 +538,7 @@ public class ApiClient {
 
         // Generate the uri
         String uri = "/group/{id}/add/{userId}";
-        uri = uri.replaceAll("\\{{1}([.;?*+]*([^\\{\\}.;?*+]+)[^\\}]*)\\}{1}", "{$2}"); //Remove * . ; ? from url template
+        uri = uri.replaceAll(URI_REGEX, "{$2}"); //Remove * . ; ? from url template
         uri = uri.replace("{id}", this.renderPathParam("id", id));
         uri = uri.replace("{userId}", this.renderPathParam("userId", userId));
         
@@ -563,7 +572,7 @@ public class ApiClient {
 
         // Generate the uri
         String uri = "/group/{id}/delete/{userId}";
-        uri = uri.replaceAll("\\{{1}([.;?*+]*([^\\{\\}.;?*+]+)[^\\}]*)\\}{1}", "{$2}"); //Remove * . ; ? from url template
+        uri = uri.replaceAll(URI_REGEX, "{$2}"); //Remove * . ; ? from url template
         uri = uri.replace("{id}", this.renderPathParam("id", id));
         uri = uri.replace("{userId}", this.renderPathParam("userId", userId));
         
@@ -590,7 +599,7 @@ public class ApiClient {
         
 
         // Generate the uri
-        String uri = "/photo";
+        String uri = PHOTO_PATH;
 
         HttpRequest request = client.post(uri);
 
@@ -609,18 +618,18 @@ public class ApiClient {
      * @param buffer Buffer that represents the body of the request
      * @param handler The handler for the asynchronous request
      */
-    public void addPhotoWithImage*Buffer(
+    public void addPhotoWithImageBuffer(
         Buffer buffer, Handler<AsyncResult<HttpResponse>> handler) {
         // Check required params
         
 
         // Generate the uri
-        String uri = "/photo";
+        String uri = PHOTO_PATH;
 
         HttpRequest request = client.post(uri);
 
         MultiMap requestCookies = MultiMap.caseInsensitiveMultiMap();
-        this.addHeaderParam("Content-Type", "image/*", request);
+        this.addHeaderParam(HttpHeaderNames.CONTENT_TYPE.toString(), "image/*", request);
         this.attachApiKeyAuthSecurity(request, requestCookies);
         this.attachBearerAuthSecurity(request, requestCookies);
         
@@ -635,13 +644,13 @@ public class ApiClient {
      * @param stream ReadStream that represents the body of the request
      * @param handler The handler for the asynchronous request
      */
-    public void addPhotoWithImage*Stream(
+    public void addPhotoWithImageStream(
         ReadStream<Buffer> stream, Handler<AsyncResult<HttpResponse>> handler) {
         // Check required params
         
 
         // Generate the uri
-        String uri = "/photo";
+        String uri = PHOTO_PATH;
 
         HttpRequest request = client.post(uri);
 
@@ -694,7 +703,7 @@ public class ApiClient {
 
         // Generate the uri
         String uri = "/photo/{id}";
-        uri = uri.replaceAll("\\{{1}([.;?*+]*([^\\{\\}.;?*+]+)[^\\}]*)\\}{1}", "{$2}"); //Remove * . ; ? from url template
+        uri = uri.replaceAll(URI_REGEX, "{$2}"); //Remove * . ; ? from url template
         uri = uri.replace("{id}", this.renderPathParam("id", id));
         
 
@@ -725,7 +734,7 @@ public class ApiClient {
 
         // Generate the uri
         String uri = "/photo/{id}";
-        uri = uri.replaceAll("\\{{1}([.;?*+]*([^\\{\\}.;?*+]+)[^\\}]*)\\}{1}", "{$2}"); //Remove * . ; ? from url template
+        uri = uri.replaceAll(URI_REGEX, "{$2}"); //Remove * . ; ? from url template
         uri = uri.replace("{id}", this.renderPathParam("id", id));
         
 
@@ -756,7 +765,7 @@ public class ApiClient {
 
         // Generate the uri
         String uri = "/photo/{id}";
-        uri = uri.replaceAll("\\{{1}([.;?*+]*([^\\{\\}.;?*+]+)[^\\}]*)\\}{1}", "{$2}"); //Remove * . ; ? from url template
+        uri = uri.replaceAll(URI_REGEX, "{$2}"); //Remove * . ; ? from url template
         uri = uri.replace("{id}", this.renderPathParam("id", id));
         
 
@@ -786,7 +795,7 @@ public class ApiClient {
 
         // Generate the uri
         String uri = "/photo/{id}/tag";
-        uri = uri.replaceAll("\\{{1}([.;?*+]*([^\\{\\}.;?*+]+)[^\\}]*)\\}{1}", "{$2}"); //Remove * . ; ? from url template
+        uri = uri.replaceAll(URI_REGEX, "{$2}"); //Remove * . ; ? from url template
         uri = uri.replace("{id}", this.renderPathParam("id", id));
         
 
@@ -819,7 +828,7 @@ public class ApiClient {
 
         // Generate the uri
         String uri = "/photo/{id}/tag/{tag}";
-        uri = uri.replaceAll("\\{{1}([.;?*+]*([^\\{\\}.;?*+]+)[^\\}]*)\\}{1}", "{$2}"); //Remove * . ; ? from url template
+        uri = uri.replaceAll(URI_REGEX, "{$2}"); //Remove * . ; ? from url template
         uri = uri.replace("{id}", this.renderPathParam("id", id));
         uri = uri.replace("{tag}", this.renderPathParam("tag", tag));
         
@@ -853,7 +862,7 @@ public class ApiClient {
 
         // Generate the uri
         String uri = "/photo/{id}/tag/{tag}";
-        uri = uri.replaceAll("\\{{1}([.;?*+]*([^\\{\\}.;?*+]+)[^\\}]*)\\}{1}", "{$2}"); //Remove * . ; ? from url template
+        uri = uri.replaceAll(URI_REGEX, "{$2}"); //Remove * . ; ? from url template
         uri = uri.replace("{id}", this.renderPathParam("id", id));
         uri = uri.replace("{tag}", this.renderPathParam("tag", tag));
         
@@ -1526,7 +1535,7 @@ public class ApiClient {
         for (Map.Entry<String, String> e : cookieParams.entries()) {
             if (otherCookies!= null && !otherCookies.contains(e.getKey())) {
                 try {
-                    listToSerialize.add(URLEncoder.encode(e.getKey(), "UTF-8") + "=" + URLEncoder.encode(e.getValue(), "UTF-8"));
+                    listToSerialize.add(URLEncoder.encode(e.getKey(), TEXT_ENCODING) + "=" + URLEncoder.encode(e.getValue(), TEXT_ENCODING));
                 } catch (UnsupportedEncodingException e1) {
                 }
             }
@@ -1534,7 +1543,7 @@ public class ApiClient {
         if (otherCookies != null) {
             for (Map.Entry<String, String> e : otherCookies.entries()) {
                 try {
-                    listToSerialize.add(URLEncoder.encode(e.getKey(), "UTF-8") + "=" + URLEncoder.encode(e.getValue(), "UTF-8"));
+                    listToSerialize.add(URLEncoder.encode(e.getKey(), TEXT_ENCODING) + "=" + URLEncoder.encode(e.getValue(), TEXT_ENCODING));
                 } catch (UnsupportedEncodingException e1) {
                 }
             }
@@ -1546,7 +1555,7 @@ public class ApiClient {
 
     private String encode(String s) {
         try {
-            return URLEncoder.encode(s, "UTF-8");
+            return URLEncoder.encode(s, TEXT_ENCODING);
         } catch (Exception e) {
             return null;
         }
