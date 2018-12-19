@@ -1,5 +1,7 @@
 package com.zanclus.photo;
 
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.streams.ReadStream;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.core.AsyncResult;
 import io.vertx.ext.unit.Async;

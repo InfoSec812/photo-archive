@@ -1,5 +1,7 @@
 package com.zanclus.photo;
 
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.streams.ReadStream;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.core.AsyncResult;
 import io.vertx.ext.unit.Async;
@@ -47,7 +49,7 @@ public class AddPhotoTest extends BaseTest {
 
         // TODO set parameters for addPhotoWithImage*Buffer request
         Buffer buffer = null;
-        apiClient.addPhotoWithImage*Buffer(buffer, (AsyncResult<HttpResponse> ar) -> {
+        apiClient.addPhotoWithImageBuffer(buffer, (AsyncResult<HttpResponse> ar) -> {
             if (ar.succeeded()) {
                 test.assertEquals(202, ar.result().statusCode());
                 //TODO add your asserts
@@ -59,7 +61,7 @@ public class AddPhotoTest extends BaseTest {
 
         // TODO set parameters for addPhotoWithImage*Stream request
         ReadStream<Buffer> stream = null;
-        apiClient.addPhotoWithImage*Stream(stream, (AsyncResult<HttpResponse> ar) -> {
+        apiClient.addPhotoWithImageStream(stream, (AsyncResult<HttpResponse> ar) -> {
             if (ar.succeeded()) {
                 test.assertEquals(202, ar.result().statusCode());
                 //TODO add your asserts
@@ -87,7 +89,7 @@ public class AddPhotoTest extends BaseTest {
 
         // TODO set parameters for addPhotoWithImage*Buffer request
         Buffer buffer = null;
-        apiClient.addPhotoWithImage*Buffer(buffer, (AsyncResult<HttpResponse> ar) -> {
+        apiClient.addPhotoWithImageBuffer(buffer, (AsyncResult<HttpResponse> ar) -> {
             if (ar.succeeded()) {
                 test.assertEquals(403, ar.result().statusCode());
                 //TODO add your asserts
@@ -99,7 +101,7 @@ public class AddPhotoTest extends BaseTest {
 
         // TODO set parameters for addPhotoWithImage*Stream request
         ReadStream<Buffer> stream = null;
-        apiClient.addPhotoWithImage*Stream(stream, (AsyncResult<HttpResponse> ar) -> {
+        apiClient.addPhotoWithImageStream(stream, (AsyncResult<HttpResponse> ar) -> {
             if (ar.succeeded()) {
                 test.assertEquals(403, ar.result().statusCode());
                 //TODO add your asserts
