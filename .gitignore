@@ -1,0 +1,5 @@
+.sonarlint
+.sonarlint/**
+target
+target/**
+**/*.iml
