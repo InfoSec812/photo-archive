@@ -165,6 +165,28 @@ paths:
                 $ref: '#/components/schemas/Group'
         '404':
           description: The authenticated user does not have permissions to view the requested object, or the object was not found
+    delete:
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      parameters:
+        - in: path
+          required: true
+          name: id
+          schema:
+            type: string
+            example: 'admin'
+      description: Delete the specified group
+      operationId: deleteGroupById
+      responses:
+        '202':
+          description: The requested group exists and the authenticated user has permissions to modify the group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '404':
+          description: The authenticated user does not have permissions to view the requested object, or the object was not found
   /group/{id}/add/{userId}:
     post:
       security:
