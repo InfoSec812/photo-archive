@@ -37,19 +37,28 @@ public class MainVerticle extends AbstractVerticle {
 
   Maybe<JsonObject> initConfigRetriever() {
     // Load the default configuration from the classpath
-    LOG.info("Configuration store loading.");
-    ConfigStoreOptions defaultOpts = new ConfigStoreOptions().setType("file").setFormat("json")
-            .setConfig(new JsonObject().put("path", "insult_default_config.json"));
+    LOG.info("Loading configuration from file from classpath");
+    ConfigStoreOptions defaultOpts = new ConfigStoreOptions().setType("file")
+            .setFormat("json")
+            .setConfig(new JsonObject().put("path", "photo_archive.json"));
+
+    // If a config json file is passed at startup, load that AFTER the classpath
+    // default config
+    LOG.info("Loading Vert.x config from startup");
+    ConfigStoreOptions startupOpts = new ConfigStoreOptions().setType("json")
+            .setConfig(vertx.getOrCreateContext().config());
 
     // When running inside of Kubernetes, configure the application to also load
     // from a ConfigMap. This config is ONLY loaded when running inside of
-    // Kubernetes or OpenShift
+    // Kubernetes or OpenShift and the `NAMESPACE` environment variable is set
     ConfigStoreOptions confOpts = new ConfigStoreOptions().setType("configmap")
-            .setConfig(new JsonObject().put("name", "insult-config").put("optional", true));
+            .setConfig(new JsonObject().put("name", "photo-archive-config")
+                    .put("optional", true));
 
     // Add the default and container config options into the ConfigRetriever
     ConfigRetrieverOptions retrieverOptions = new ConfigRetrieverOptions()
             .addStore(defaultOpts)
+            .addStore(startupOpts)
             .addStore(confOpts);
 
     // Create the ConfigRetriever and return the Maybe when complete
@@ -133,7 +142,7 @@ public class MainVerticle extends AbstractVerticle {
 
     root.route("/eventbus/*").handler(sockHandler);
 
-    return vertx.createHttpServer(httpOpts).requestHandler(root::handle).rxListen().toMaybe();
+    return vertx.createHttpServer(httpOpts).requestHandler(root).rxListen().toMaybe();
   }
 
   /**
@@ -165,7 +174,7 @@ public class MainVerticle extends AbstractVerticle {
             .flatMap(this::provisionRouter)
             .flatMap(this::provisionHttpServer)
             .subscribe(
-                    c -> startFuture.complete(),
+                    startFuture::complete,
                     startFuture::fail
             );
   }
