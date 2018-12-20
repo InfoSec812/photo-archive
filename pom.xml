@@ -17,6 +17,8 @@
     <sonar.organization>infosec812-github</sonar.organization>
     <sonar.projectKey>InfoSec812_photo-archive</sonar.projectKey>
     <vertx-maven-plugin.version>1.0.15</vertx-maven-plugin.version>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
 
   <dependencies>
@@ -91,6 +93,11 @@
       <artifactId>log4j-slf4j-impl</artifactId>
       <version>2.6.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>RELEASE</version>
+    </dependency>
 
     <!-- Test Dependencies -->
     <dependency>
@@ -148,7 +155,6 @@
         <executions>
           <execution>
             <goals>
-              <goal>compile</goal>
               <goal>compileTests</goal>
             </goals>
           </execution>
@@ -161,6 +167,7 @@
           <useFile>false</useFile>
           <includes>
             <include>**/*Spec.java</include>
+            <include>**/*Spec.groovy</include>
           </includes>
         </configuration>
       </plugin>
