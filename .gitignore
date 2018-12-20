@@ -18,3 +18,4 @@ src/main/frontend/build/**
 .project
 .settings
 .settings/**
+.factorypath
