@@ -1,8 +1,8 @@
 package com.zanclus.photo.services.impl;
 
 import com.zanclus.photo.services.UserService;
-import com.zanclus.photo.types.Credentials;
-import com.zanclus.photo.types.NewUser;
+import com.zanclus.photo.services.types.Credentials;
+import com.zanclus.photo.services.types.NewUser;
 
 import org.apache.commons.lang3.NotImplementedException;
 

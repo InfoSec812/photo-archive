@@ -1,7 +1,7 @@
 package com.zanclus.photo.services.impl;
 
 import com.zanclus.photo.services.PhotoService;
-import com.zanclus.photo.types.ImageObject;
+import com.zanclus.photo.services.types.ImageObject;
 
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -23,12 +23,12 @@ public class PhotoServiceImpl implements PhotoService {
   }
 
   @Override
-  public void addPhoto(Buffer imageData, Handler<AsyncResult<JsonObject>> handler) {
+  public void addPhoto(ImageObject imageData, Handler<AsyncResult<JsonObject>> handler) {
     handler.handle(Future.failedFuture(new NotImplementedException("Method not yet implemented")));
   }
 
   @Override
-  public void getImageById(String id, Handler<AsyncResult<Buffer>> handler) {
+  public void getImageById(String id, Handler<AsyncResult<JsonObject>> handler) {
     handler.handle(Future.failedFuture(new NotImplementedException("Method not yet implemented")));
   }
 

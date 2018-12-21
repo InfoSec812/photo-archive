@@ -1,7 +1,7 @@
 package com.zanclus.photo.services;
 
 import com.zanclus.photo.services.impl.PhotoServiceImpl;
-import com.zanclus.photo.types.ImageObject;
+import com.zanclus.photo.services.types.ImageObject;
 
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
@@ -11,6 +11,13 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
+/**
+ * The service proxy implementation of the Photo service
+ *
+ * NOTE: The {@link #addPhoto} method and the {@link #getImageById} cannot directly return
+ * a {@link Buffer} due to limitations of a Service Proxy. The implementing code will
+ * have to handle the binary read and response.
+ */
 @ProxyGen
 @VertxGen
 public interface PhotoService {
@@ -23,9 +30,14 @@ public interface PhotoService {
     return new PhotoServiceVertxEBProxy(vertx, address);
   }
 
-  void addPhoto(Buffer imageData, Handler<AsyncResult<JsonObject>> handler);
+  /**
+   * Add a new photo to storage
+   * @param imageData The image metadata
+   * @param handler The callback handler
+   */
+  void addPhoto(ImageObject imageData, Handler<AsyncResult<JsonObject>> handler);
 
-  void getImageById(String id, Handler<AsyncResult<Buffer>> handler);
+  void getImageById(String id, Handler<AsyncResult<JsonObject>> handler);
 
   void updateImageById(ImageObject imageData, Handler<AsyncResult<JsonObject>> handler);
 

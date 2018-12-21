@@ -1,8 +1,8 @@
 package com.zanclus.photo.services.impl;
 
 import com.zanclus.photo.services.GroupService;
-import com.zanclus.photo.types.Group;
-import com.zanclus.photo.types.NewGroup;
+import com.zanclus.photo.services.types.Group;
+import com.zanclus.photo.services.types.NewGroup;
 
 import org.apache.commons.lang3.NotImplementedException;
 

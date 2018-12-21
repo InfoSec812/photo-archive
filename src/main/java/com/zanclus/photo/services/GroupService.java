@@ -1,8 +1,8 @@
 package com.zanclus.photo.services;
 
 import com.zanclus.photo.services.impl.GroupServiceImpl;
-import com.zanclus.photo.types.Group;
-import com.zanclus.photo.types.NewGroup;
+import com.zanclus.photo.services.types.Group;
+import com.zanclus.photo.services.types.NewGroup;
 
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;

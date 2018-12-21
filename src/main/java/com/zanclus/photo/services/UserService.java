@@ -1,8 +1,8 @@
 package com.zanclus.photo.services;
 
-import com.zanclus.photo.services.impl.PhotoServiceImpl;
-import com.zanclus.photo.types.Credentials;
-import com.zanclus.photo.types.NewUser;
+import com.zanclus.photo.services.impl.UserServiceImpl;
+import com.zanclus.photo.services.types.Credentials;
+import com.zanclus.photo.services.types.NewUser;
 
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
