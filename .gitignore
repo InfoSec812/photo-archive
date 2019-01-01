@@ -19,3 +19,5 @@ src/main/frontend/build/**
 .settings
 .settings/**
 .factorypath
+.vertx/
+.vertx/**
