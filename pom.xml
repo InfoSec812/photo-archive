@@ -101,6 +101,11 @@
             <version>2.6.2</version>
         </dependency>
         <dependency>
+            <groupId>com.github.mautini</groupId>
+            <artifactId>schemaorg-java</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>RELEASE</version>
@@ -136,31 +141,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.jsonschema2pojo</groupId>
-                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-                <version>1.0.0</version>
-                <configuration>
-                    <sourceDirectory>${basedir}/src/main/resources/schemas</sourceDirectory>
-                    <targetPackage>com.zanclus.photo.services.types</targetPackage>
-                    <includeGetters>false</includeGetters>
-                    <includeSetters>false</includeSetters>
-                    <includeHashcodeAndEquals>false</includeHashcodeAndEquals>
-                    <targetLanguage>java</targetLanguage>
-                    <annotationStyle>none</annotationStyle>
-                    <outputDirectory>${basedir}/src/main/java</outputDirectory>
-                    <removeOldOutput>false</removeOldOutput>
-                    <serializable>true</serializable>
-                    <includeToString>false</includeToString>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>io.reactiverse</groupId>
                 <artifactId>vertx-maven-plugin</artifactId>
