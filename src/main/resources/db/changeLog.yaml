@@ -105,6 +105,7 @@ databaseChangeLog:
                   defaultValueComputed: uuid_generate_v4()
                   constraints:
                     nullable: false
+                    unique: true
               - column:
                   name: filename
                   type: varchar(255)
@@ -113,6 +114,11 @@ databaseChangeLog:
               - column:
                   name: details
                   type: jsonb
+              - column:
+                  name: owner
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
               - column:
                   name: created
                   type: timestamp with timezone
@@ -125,3 +131,95 @@ databaseChangeLog:
                   defaultValueComputed: now()
                   constraints:
                     nullable: false
+        - addForeignKeyConstraint:
+            comment: Owner foreign key constraint
+            baseColumnNames: owner
+            baseTableName: photos
+            constraintName: photo_owner_fk
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: users
+  - changeSet:
+      id: 4
+      author: dphillips
+      comment: Create permissions schema for data
+      changes:
+        - createTable:
+            tableName: user_permissions
+            columns:
+              - column:
+                  name: user
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: photo
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rights
+                  type: BIT VARYING (20)
+        - addForeignKeyConstraint:
+            comment: User permissions foreign key constraint
+            baseColumnNames: user
+            baseTableName: user_permissions
+            constraintName: user_permissions_user_fk
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: users
+        - addForeignKeyConstraint:
+            comment: Photo permissions foreign key constraint
+            baseColumnNames: photo
+            baseTableName: user_permissions
+            constraintName: user_permissions_photo_fk
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: photos
+        - createTable:
+            tableName: group_permissions
+            columns:
+              - column:
+                  name: group
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: photo
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rights
+                  type: BIT VARYING (20)
+        - addForeignKeyConstraint:
+            comment: User permissions foreign key constraint
+            baseColumnNames: group
+            baseTableName: group_permissions
+            constraintName: group_permissions_user_fk
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: groups
+        - addForeignKeyConstraint:
+            comment: Photo permissions foreign key constraint
+            baseColumnNames: photo
+            baseTableName: group_permissions
+            constraintName: group_permissions_photo_fk
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: photos
