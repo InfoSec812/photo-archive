@@ -22,6 +22,8 @@ class DbMigrationSpec extends Specification {
       }
       this.dbContainer
               .withDatabaseName('photoarchive')
+              .withUsername('dphillips')
+              .withPassword('dphillips')
               .start()
       dbConfig = [
         host: dbContainer.getContainerIpAddress(),
@@ -53,7 +55,7 @@ class DbMigrationSpec extends Specification {
       def underTest = new MainVerticle()
 
     and: 'The database configuration'
-      def dbJson = new JsonObject(dbConfig)
+      def dbJson = new JsonObject([db: dbConfig])
 
     when: 'The database migration functions are run'
       def result = underTest.databaseMigrations(dbJson)
