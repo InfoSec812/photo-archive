@@ -223,3 +223,63 @@ databaseChangeLog:
             onUpdate: RESTRICT
             referencedColumnNames: id
             referencedTableName: photos
+  - changeSet:
+      id: 5
+      author: dphillips
+      comment: Add schema for tagging photos
+      changes:
+        - createTable:
+            tableName: tags
+            columns:
+              - column:
+                  name: id
+                  type: varchar(40)
+                  constraints:
+                    nullable: true
+                    unique: true
+                    primaryKey: true
+              - column:
+                  name: tag
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+        - createTable:
+            tableName: photo_tags
+            columns:
+              - column:
+                  name: photo_id
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tag_id
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            columnNames: photo_id, tag_id
+            tableName: photo_tags
+            constraintName: photo_tag_pk
+        - addForeignKeyConstraint:
+            comment: Photo tag foreign key constraint
+            baseColumnNames: photo_id
+            baseTableName: photo_tags
+            constraintName: photo_tags_photo_fk
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: photos
+        - addForeignKeyConstraint:
+            comment: Photo tag reverse foreign key constraint
+            baseColumnNames: tag_id
+            baseTableName: photo_tags
+            constraintName: photo_tags_tag_fk
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: tags
