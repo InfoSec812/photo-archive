@@ -18,8 +18,16 @@ import io.vertx.reactivex.ext.web.api.contract.openapi3.OpenAPI3RouterFactory;
 import io.vertx.reactivex.ext.web.handler.CorsHandler;
 import io.vertx.reactivex.ext.web.handler.sockjs.SockJSHandler;
 
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.resource.ClassLoaderResourceAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 import static org.apache.http.HttpHeaders.*;
 import static org.apache.http.entity.ContentType.*;
@@ -65,16 +73,39 @@ public class MainVerticle extends AbstractVerticle {
     return ConfigRetriever.create(vertx, retrieverOptions).rxGetConfig().toMaybe();
   }
 
+  public Maybe<Boolean> databaseMigrations(JsonObject config) {
+    // Merge the loaded configuration into the config for this Verticle
+    loadedConfig = config;
+    String dbHost = loadedConfig.getJsonObject("db").getString("host");
+    Integer dbPort = loadedConfig.getJsonObject("db").getInteger("port");
+    String dbUser = loadedConfig.getJsonObject("db").getString("username");
+    String dbPass = loadedConfig.getJsonObject("db").getString("password");
+    String dbDriver = loadedConfig.getJsonObject("db").getString("driver");
+    String dbName = loadedConfig.getJsonObject("db").getString("database");
+    try {
+      Class.forName(dbDriver);
+
+      String dbUrl = String.format("jdbc:postgresql://%s:%d/%s", dbHost, dbPort, dbName);
+      Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
+      Database db = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(conn));
+      Liquibase liquibase = new Liquibase("db/changeLog.yaml", new ClassLoaderResourceAccessor(), db);
+      liquibase.update("main");
+      db.close();
+      conn.close();
+      return Maybe.just(Boolean.TRUE);
+    } catch (Exception e) {
+      return Maybe.error(e);
+    }
+  }
+
   /**
    * Begin the creation of the {@link OpenAPI3RouterFactory}
    *
-   * @param config The config loaded via the {@link ConfigRetriever}
+   * @param dbConfig A {@link Boolean} indication the status of the database configuration
    * @return An {@link OpenAPI3RouterFactory} {@link Future} to be used to
    *         complete the next Async step
    */
-  private Maybe<OpenAPI3RouterFactory> provisionRouter(JsonObject config) {
-    // Merge the loaded configuration into the config for this Verticle
-    loadedConfig = config().mergeIn(config);
+  private Maybe<OpenAPI3RouterFactory> provisionRouter(Boolean dbConfig) {
 
     if (LOG.isInfoEnabled()) {
       LOG.info("Config Loaded: {}", loadedConfig.encodePrettily());
@@ -171,6 +202,7 @@ public class MainVerticle extends AbstractVerticle {
   @Override
   public void start(Future startFuture) {
     initConfigRetriever()
+            .flatMap(this::databaseMigrations)
             .flatMap(this::provisionRouter)
             .flatMap(this::provisionHttpServer)
             .subscribe(
