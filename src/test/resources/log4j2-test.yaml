@@ -1,0 +1,19 @@
+Configuration:
+  status: warn
+  name: YAMLConfigTest
+  properties:
+    property:
+      name: filename
+      value: target/test-yaml.log
+  thresholdFilter:
+    level: debug
+  appenders:
+    Console:
+      name: STDOUT
+      PatternLayout:
+        Pattern: "%d %p %C{1.} [%t] %m%n"
+  Loggers:
+    Root:
+      level: debug
+      AppenderRef:
+        ref: STDOUT
