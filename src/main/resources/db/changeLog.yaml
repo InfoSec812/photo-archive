@@ -1,0 +1,93 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: dphillips
+      comment: Enable uuid-ossp extension
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - sqlCheck:
+            expectedResult: 0
+            sql: select COUNT(1) from pg_extension WHERE extname LIKE 'uuid%';
+      changes:
+        - sql:
+            comment: Ensure UUID extension is enabled
+            sql: >
+              CREATE EXTENSION "uuid-ossp";
+  - changeSet:
+      id: 2
+      author: dphillips
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: varchar(40)
+                  defaultValueComputed: uuid_generate_v4()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: given_name
+                  type: varchar(50)
+              - column:
+                  name: family_name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(50)
+              - column:
+                  name: created
+                  type: timestamp with timezone
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modified
+                  type: timestamp with timezone
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: groups
+            columns:
+              - column:
+                  name: id
+                  type: varchar(40)
+                  defaultValueComputed: uuid_generate_v4()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created
+                  type: timestamp with timezone
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modified
+                  type: timestamp with timezone
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: user_groups
+            columns:
+              - column:
+                  name: user
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: group
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
