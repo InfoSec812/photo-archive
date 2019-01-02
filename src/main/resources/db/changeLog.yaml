@@ -91,3 +91,37 @@ databaseChangeLog:
                   type: varchar(40)
                   constraints:
                     nullable: false
+  - changeSet:
+      id: 3
+      author: dphillips
+      comment: Create photos table
+      changes:
+        - createTable:
+            tableName: photos
+            columns:
+              - column:
+                  name: id
+                  type: varchar(40)
+                  defaultValueComputed: uuid_generate_v4()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: filename
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: details
+                  type: jsonb
+              - column:
+                  name: created
+                  type: timestamp with timezone
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modified
+                  type: timestamp with timezone
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
