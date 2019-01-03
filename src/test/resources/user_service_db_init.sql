@@ -30,6 +30,20 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
+-- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
+
+
+--
 -- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -41,20 +55,6 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 --
 
 COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
-
-
---
--- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA public;
-
-
---
--- Name: EXTENSION "pgcrypto"; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION "pgcrypto" IS 'Crypto functions for PostgreSQL';
 
 
 SET default_tablespace = '';
@@ -182,23 +182,20 @@ CREATE TABLE public.users (
     username character varying(50) NOT NULL,
     given_name character varying(50),
     family_name character varying(50) NOT NULL,
-    password character varying(50),
+    password text,
     created timestamp with time zone DEFAULT now() NOT NULL,
     modified timestamp with time zone DEFAULT now() NOT NULL
 );
-
-INSERT INTO users (username, given_name, family_name, password) VALUES ('dphillips', 'Deven', 'Phillips', )
-
 
 --
 -- Data for Name: databasechangelog; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.databasechangelog VALUES ('1', 'dphillips', 'db/changeLog.yaml', '2019-01-03 09:54:52.925875', 1, 'EXECUTED', '8:47c30c13acd7bf79fa4fa530edc1fb09', 'sql', 'Enable uuid-ossp extension', NULL, '3.6.2', NULL, NULL, '6527292852');
-INSERT INTO public.databasechangelog VALUES ('2', 'dphillips', 'db/changeLog.yaml', '2019-01-03 09:54:52.955089', 2, 'EXECUTED', '8:03cad7da5faab8b747e3a7d10b09fb8e', 'createTable tableName=users; createTable tableName=groups; createTable tableName=user_groups', '', NULL, '3.6.2', NULL, NULL, '6527292852');
-INSERT INTO public.databasechangelog VALUES ('3', 'dphillips', 'db/changeLog.yaml', '2019-01-03 09:54:52.97476', 3, 'EXECUTED', '8:dfe1c43402726d81c6bd6394b937574f', 'createTable tableName=photos; addForeignKeyConstraint baseTableName=photos, constraintName=photo_owner_fk, referencedTableName=users', 'Create photos table', NULL, '3.6.2', NULL, NULL, '6527292852');
-INSERT INTO public.databasechangelog VALUES ('4', 'dphillips', 'db/changeLog.yaml', '2019-01-03 09:54:52.996545', 4, 'EXECUTED', '8:dfe4cb4cb6e4cef832104f89b57b70fe', 'createTable tableName=user_permissions; addForeignKeyConstraint baseTableName=user_permissions, constraintName=user_permissions_user_fk, referencedTableName=users; addForeignKeyConstraint baseTableName=user_permissions, constraintName=user_permiss...', 'Create permissions schema for data', NULL, '3.6.2', NULL, NULL, '6527292852');
-INSERT INTO public.databasechangelog VALUES ('5', 'dphillips', 'db/changeLog.yaml', '2019-01-03 09:54:53.023216', 5, 'EXECUTED', '8:40477601b70f41155c08abb2f61c8f2e', 'createTable tableName=tags; createTable tableName=photo_tags; addPrimaryKey constraintName=photo_tag_pk, tableName=photo_tags; addForeignKeyConstraint baseTableName=photo_tags, constraintName=photo_tags_photo_fk, referencedTableName=photos; addFor...', 'Add schema for tagging photos', NULL, '3.6.2', NULL, NULL, '6527292852');
+INSERT INTO public.databasechangelog VALUES ('1', 'dphillips', 'db/changeLog.yaml', '2019-01-03 11:12:41.875986', 1, 'EXECUTED', '8:63ba5ff0587d4a504e133b62411ac02d', 'sql; sql', 'Enable uuid-ossp and pgcrypto extensions', NULL, '3.6.2', NULL, NULL, '6531961806');
+INSERT INTO public.databasechangelog VALUES ('2', 'dphillips', 'db/changeLog.yaml', '2019-01-03 11:12:41.951922', 2, 'EXECUTED', '8:f5619748131cfb8464f7dc19cee6404c', 'createTable tableName=users; createTable tableName=groups; createTable tableName=user_groups', '', NULL, '3.6.2', NULL, NULL, '6531961806');
+INSERT INTO public.databasechangelog VALUES ('3', 'dphillips', 'db/changeLog.yaml', '2019-01-03 11:12:41.982092', 3, 'EXECUTED', '8:dfe1c43402726d81c6bd6394b937574f', 'createTable tableName=photos; addForeignKeyConstraint baseTableName=photos, constraintName=photo_owner_fk, referencedTableName=users', 'Create photos table', NULL, '3.6.2', NULL, NULL, '6531961806');
+INSERT INTO public.databasechangelog VALUES ('4', 'dphillips', 'db/changeLog.yaml', '2019-01-03 11:12:42.006609', 4, 'EXECUTED', '8:dfe4cb4cb6e4cef832104f89b57b70fe', 'createTable tableName=user_permissions; addForeignKeyConstraint baseTableName=user_permissions, constraintName=user_permissions_user_fk, referencedTableName=users; addForeignKeyConstraint baseTableName=user_permissions, constraintName=user_permiss...', 'Create permissions schema for data', NULL, '3.6.2', NULL, NULL, '6531961806');
+INSERT INTO public.databasechangelog VALUES ('5', 'dphillips', 'db/changeLog.yaml', '2019-01-03 11:12:42.033298', 5, 'EXECUTED', '8:40477601b70f41155c08abb2f61c8f2e', 'createTable tableName=tags; createTable tableName=photo_tags; addPrimaryKey constraintName=photo_tag_pk, tableName=photo_tags; addForeignKeyConstraint baseTableName=photo_tags, constraintName=photo_tags_photo_fk, referencedTableName=photos; addFor...', 'Add schema for tagging photos', NULL, '3.6.2', NULL, NULL, '6531961806');
 
 
 --
@@ -313,6 +310,14 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_username_key UNIQUE (username);
+
+
+--
 -- Name: group_permissions group_permissions_photo_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -367,6 +372,9 @@ ALTER TABLE ONLY public.user_permissions
 ALTER TABLE ONLY public.user_permissions
     ADD CONSTRAINT user_permissions_user_fk FOREIGN KEY ("user") REFERENCES public.users(id) ON UPDATE RESTRICT;
 
+SELECT pg_catalog.set_config('search_path', 'public', false);
+
+INSERT INTO public.users (username, given_name, family_name, password) VALUES ('dphillips', 'Deven', 'Phillips', crypt('dphillips', gen_salt('bf'::text, 8)));
 
 --
 -- PostgreSQL database dump complete
