@@ -8,11 +8,16 @@ import lombok.Data;
 @Data
 @DataObject
 public class Credentials extends VertxDataObject {
-  private final String username;
+  private String username;
 
-  private final String password;
+  private String password;
+
+  public Credentials() {
+      super();
+  }
 
   public Credentials(JsonObject json) {
+      super();
       Credentials temp = Json.decodeValue(json.encode(), Credentials.class);
       this.username = temp.username;
       this.password = temp.password;
