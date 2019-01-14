@@ -2,18 +2,16 @@ databaseChangeLog:
   - changeSet:
       id: 1
       author: dphillips
-      comment: Enable uuid-ossp extension
-      preConditions:
-        - onFail: MARK_RAN
-        - onError: HALT
-        - sqlCheck:
-            expectedResult: 0
-            sql: select COUNT(1) from pg_extension WHERE extname LIKE 'uuid%';
+      comment: Enable uuid-ossp and pgcrypto extensions
       changes:
         - sql:
             comment: Ensure UUID extension is enabled
             sql: >
-              CREATE EXTENSION "uuid-ossp";
+              CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+        - sql:
+            comment: Ensure pgcrypto is enabled
+            sql: >
+              CREATE EXTENSION IF NOT EXISTS "pgcrypto";
   - changeSet:
       id: 2
       author: dphillips
@@ -27,6 +25,12 @@ databaseChangeLog:
                   defaultValueComputed: uuid_generate_v4()
                   constraints:
                     primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    unique: true
                     nullable: false
               - column:
                   name: given_name
