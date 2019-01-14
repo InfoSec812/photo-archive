@@ -10,14 +10,17 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-servers:
-  - url: https://photos.apps.zanclus.com/api/v1
+#servers:
+#  - url: https://photos.apps.zanclus.com/api/v1
 paths:
   /user:
     put:
       description: |
         When provided with a valid username and password, returns an authentication token which expires after a configured amount of time
       operationId: userLogin
+      x-vertx-event-bus:
+        address: svc.user
+        method: userLogin
       requestBody:
         description: The username/password credentials
         required: true
@@ -50,6 +53,9 @@ paths:
       description: |
         Create a new user account
       operationId: newUser
+      x-vertx-event-bus:
+        address: svc.user
+        method: newUser
       requestBody:
         description: The username/password credentials
         required: true
@@ -76,6 +82,9 @@ paths:
       - BearerAuth: []
       description: Get user details for a given username
       operationId: getUserDetailsByName
+      x-vertx-event-bus:
+        address: svc.user
+        method: getUserDetailsByName
       parameters:
       - in: path
         name: id
@@ -99,6 +108,9 @@ paths:
       - ApiKeyAuth: []
       - BearerAuth: []
       operationId: newGroup
+      x-vertx-event-bus:
+        address: svc.group
+        method: newGroup
       requestBody:
         description: The new group details
         required: true
@@ -127,6 +139,9 @@ paths:
       - BearerAuth: []
       description: View the specified group details
       operationId: getGroupById
+      x-vertx-event-bus:
+        address: svc.group
+        method: getGroupById
       parameters:
         - in: path
           name: id
@@ -156,6 +171,9 @@ paths:
             example: 'admin'
       description: Update the specified group
       operationId: updateGroupById
+      x-vertx-event-bus:
+        address: svc.group
+        method: updateGroupById
       responses:
         '202':
           description: The requested group exists and the authenticated user has permissions to modify the group
@@ -178,6 +196,9 @@ paths:
             example: 'admin'
       description: Delete the specified group
       operationId: deleteGroupById
+      x-vertx-event-bus:
+        address: svc.group
+        method: deleteGroupById
       responses:
         '202':
           description: The requested group exists and the authenticated user has permissions to modify the group
@@ -194,6 +215,9 @@ paths:
       - BearerAuth: []
       description: Get user details for a given username
       operationId: addUserToGroup
+      x-vertx-event-bus:
+        address: svc.group
+        method: addUserToGroup
       parameters:
         - in: path
           required: true
@@ -223,6 +247,9 @@ paths:
       - BearerAuth: []
       description: Get user details for a given username
       operationId: deleteUserFromGroup
+      x-vertx-event-bus:
+        address: svc.group
+        method: deleteUserFromGroup
       parameters:
         - in: path
           required: true
@@ -252,6 +279,9 @@ paths:
       - BearerAuth: []
       description: Upload a new photo and get back the unique identifier
       operationId: addPhoto
+      x-vertx-event-bus:
+        address: svc.photo
+        method: addPhoto
       requestBody:
         content:
           image/*:
@@ -274,6 +304,9 @@ paths:
       - BearerAuth: []
       description: Retrieve the referenced image by id
       operationId: getImageById
+      x-vertx-event-bus:
+        method: getImageById
+        address: svc.photo
       responses:
         '200':
           description: The image exists and the autheticated user is allowed access
@@ -285,6 +318,9 @@ paths:
       - BearerAuth: []
       description: Update metadata about the specified image
       operationId: updateImageById
+      x-vertx-event-bus:
+        method: updateImageById
+        address: svc.photo
       requestBody:
         content:
           application/json:
@@ -309,6 +345,9 @@ paths:
       - BearerAuth: []
       description: Delete image
       operationId: deleteImageById
+      x-vertx-event-bus:
+        method: deleteImageById
+        address: svc.photo
       parameters:
         - in: path
           name: id
@@ -327,6 +366,9 @@ paths:
       - ApiKeyAuth: []
       - BearerAuth: []
       operationId: getTagsByPhotoId
+      x-vertx-event-bus:
+        method: getTagsByPhotoId
+        address: svc.photo
       parameters:
         - in: path
           required: true
@@ -356,6 +398,9 @@ paths:
       - ApiKeyAuth: []
       - BearerAuth: []
       operationId: addTagToPhoto
+      x-vertx-event-bus:
+        method: addTagToPhoto
+        address: svc.photo
       parameters:
         - in: path
           required: true
@@ -382,6 +427,9 @@ paths:
       - ApiKeyAuth: []
       - BearerAuth: []
       operationId: deleteTagFromPhoto
+      x-vertx-event-bus:
+        method: deleteTagFromPhoto
+        address: svc.photo
       parameters:
         - in: path
           name: id
@@ -414,6 +462,10 @@ components:
         type: apiKey
         in: header
         name: X-API-Key
+  x-vertx-service-gen:
+    "svc.user": UserService
+    "svc.group": GroupService
+    "svc.photo": PhotoService
       # OAuth2:
       #   type: oauth2
       #   flows:
